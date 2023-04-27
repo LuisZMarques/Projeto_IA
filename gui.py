@@ -621,8 +621,9 @@ class SearchSolver(threading.Thread):
         # TODO calculate pairs distances
         
         for p in self.agent.pairs:
-            p.value = 20
-            
+            self.gui.text_problem.insert(tk.END, str(p)+"\n")
+        self.gui.text_problem.insert(tk.END, "END")
+
         self.agent.search_method.stopped=True
         self.gui.problem_ga = WarehouseProblemGA(self.agent)
         self.gui.manage_buttons(data_set=tk.NORMAL, runSearch=tk.DISABLED, runGA=tk.NORMAL, stop=tk.DISABLED,
