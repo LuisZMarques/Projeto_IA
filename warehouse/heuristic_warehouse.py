@@ -1,3 +1,5 @@
+import math
+
 from agentsearch.heuristic import Heuristic
 from warehouse.warehouse_problemforSearch import WarehouseProblemSearch
 from warehouse.warehouse_state import WarehouseState
@@ -9,12 +11,10 @@ class HeuristicWarehouse(Heuristic[WarehouseProblemSearch, WarehouseState]):
         super().__init__()
 
     def compute(self, state: WarehouseState) -> float:
-        h=0
-        for i in range(state.rows):
-            for j in range(state.columns):
-                if state.matrix[i][j] != 0:
-                    h += abs(i - self._lines_goal_matrix[state.matrix[i][j]]) + abs(j - self._cols_goal_matrix[state.matrix[i][j]])
-        return h
+        # Calcula a distância em linha reta da forklift até a posição final
+        distance = math.sqrt(
+            (state.forklift_row - state.final_row) ** 2 + (state.forklift_column - state.final_column) ** 2)
+        return distance
 
 
     def __str__(self):

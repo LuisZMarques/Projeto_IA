@@ -1,4 +1,5 @@
 import copy
+import math
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog as fd
@@ -619,8 +620,12 @@ class SearchSolver(threading.Thread):
 
     def run(self):
         # TODO calculate pairs distances
-        
+
+        self.gui.text_problem.delete("1.0", "end")
+        self.gui.text_problem.insert(tk.END, str(self.gui.initial_state) + "\nPairs:\n")
+
         for p in self.agent.pairs:
+            p.value = math.sqrt((p.cell1.line - p.cell2.line ) ** 2 +(p.cell1.column - p.cell2.column ) ** 2)
             self.gui.text_problem.insert(tk.END, str(p)+"\n")
         self.gui.text_problem.insert(tk.END, "END")
 
