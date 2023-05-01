@@ -1,5 +1,3 @@
-from warehouse.warehouse_state import WarehouseState
-
 class Pair:
     def __init__(self, cell1, cell2):
         self.cell1 = cell1

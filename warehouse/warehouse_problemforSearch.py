@@ -9,7 +9,7 @@ from warehouse.warehouse_state import WarehouseState
 
 class WarehouseProblemSearch(Problem[WarehouseState]):
 
-    def __init__(self, initial_state: WarehouseState, goal_position: Cell):
+    def __init__(self, initial_state: WarehouseState, goal_position: Cell) -> object:
         super().__init__(initial_state)
         self.actions = [ActionDown(), ActionUp(), ActionRight(), ActionLeft()]
         self.goal_position = goal_position
@@ -27,5 +27,6 @@ class WarehouseProblemSearch(Problem[WarehouseState]):
         return successor
 
     def is_goal(self, state: WarehouseState) -> bool:
+        # TODO
         return state.line_forklift == self.goal_position.line and state.column_forklift == self.goal_position.column
 

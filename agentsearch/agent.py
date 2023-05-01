@@ -15,9 +15,11 @@ class Agent:
 
     def solve_problem(self, problem: Problem) -> Solution:
         self.environment = problem.initial_state
+
         if self.heuristic is not None:
             problem.heuristic = self.heuristic
             self.heuristic.problem = problem
+
         self.solution = self.search_method.search(problem)
         return self.solution
 

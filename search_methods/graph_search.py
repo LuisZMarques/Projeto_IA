@@ -50,7 +50,6 @@ class GraphSearch(SearchMethod, Generic[T]):
                 successor = problem.get_successor(state, action)
                 self.add_successor_to_frontier(successor, node)
             self.compute_statistics(len(actions))
-
     @abstractmethod
     def add_successor_to_frontier(self, successor: State, parent: Node) -> None:
         pass

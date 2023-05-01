@@ -19,9 +19,11 @@ from ga.genetic_operators.recombination2 import Recombination2
 from ga.genetic_operators.recombination_pmx import RecombinationPMX
 from ga.genetic_operators.mutation_insert import MutationInsert
 from ga.genetic_algorithm_thread import GeneticAlgorithmThread
+from warehouse.heuristic_warehouse import HeuristicWarehouse
 from warehouse.warehouse_agent_search import WarehouseAgentSearch, read_state_from_txt_file
 from warehouse.warehouse_experiments_factory import WarehouseExperimentsFactory
 from warehouse.warehouse_problemforGA import WarehouseProblemGA
+from warehouse.warehouse_problemforSearch import WarehouseProblemSearch
 from warehouse.warehouse_state import WarehouseState
 
 matplotlib.use("TkAgg")
@@ -620,13 +622,21 @@ class SearchSolver(threading.Thread):
 
     def run(self):
         # TODO calculate pairs distances
-
         self.gui.text_problem.delete("1.0", "end")
-        self.gui.text_problem.insert(tk.END, str(self.gui.initial_state) + "\nPairs:\n")
+        self.gui.text_problem.insert(tk.END, str(self.gui.initial_state) + "\nPairs:" + "\n")
 
         for p in self.agent.pairs:
-            p.value = math.sqrt((p.cell1.line - p.cell2.line ) ** 2 +(p.cell1.column - p.cell2.column ) ** 2)
+            problem = WarehouseProblemSearch(self.gui.initial_state, p.cell2)
+
+            solution = self.agent.solve_problem(problem)
+            print(p.cell1,p.cell2)
+            #self.agent.execute_solution()
+            p.value = solution.cost
+            print("----")
+
+            # p.value = math.sqrt((p.cell1.line - p.cell2.line ) ** 2 +(p.cell1.column - p.cell2.column ) ** 2)
             self.gui.text_problem.insert(tk.END, str(p)+"\n")
+
         self.gui.text_problem.insert(tk.END, "END")
 
         self.agent.search_method.stopped=True
