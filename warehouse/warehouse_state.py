@@ -12,7 +12,6 @@ class WarehouseState(State[Action]):
     def __init__(self, matrix: ndarray, rows, columns):
         super().__init__()
         # TODO
-
         self.rows = rows
         self.columns = columns
         self.matrix = np.full([self.rows, self.columns], fill_value=0, dtype=int)
@@ -29,20 +28,23 @@ class WarehouseState(State[Action]):
 
     def can_move_up(self) -> bool:
         # TODO
-        return self.line_forklift-1 >= 0 and self.matrix[self.line_forklift-1][self.column_forklift] != constants.SHELF
+        return self.line_forklift-1 >= 0 and\
+            self.matrix[self.line_forklift-1][self.column_forklift] == constants.EMPTY
 
     def can_move_right(self) -> bool:
         # TODO
-        return self.column_forklift + 1 <= self.columns - 1 and self.matrix[self.line_forklift][self.column_forklift+1] != constants.SHELF
+        return self.column_forklift + 1 <= self.columns - 1 and\
+            self.matrix[self.line_forklift][self.column_forklift+1] == constants.EMPTY
 
     def can_move_down(self) -> bool:
         # TODO
-        return self.line_forklift + 1 <= self.rows - 1 and self.matrix[self.line_forklift+1][self.column_forklift] != constants.SHELF
+        return self.line_forklift + 1 <= self.rows - 1 and\
+            self.matrix[self.line_forklift+1][self.column_forklift] == constants.EMPTY
 
     def can_move_left(self) -> bool:
         # TODO
-        return self.column_forklift - 1 >= 0 and self.matrix[self.line_forklift][self.column_forklift-1] != constants.SHELF
-
+        return self.column_forklift - 1 >= 0 and\
+            self.matrix[self.line_forklift][self.column_forklift-1] == constants.EMPTY
 
     def move_up(self) -> None:
         # TODO

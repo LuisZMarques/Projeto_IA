@@ -10,6 +10,7 @@ class AStarSearch(InformedSearch):
     # f = g + h
     def add_successor_to_frontier(self, successor: State, parent: Node) -> None:
         g = parent.g + successor.action.cost
+
         if successor not in self._frontier:
             if successor not in self._explored:
                 f = g + self.heuristic.compute(successor)

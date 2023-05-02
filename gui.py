@@ -626,15 +626,25 @@ class SearchSolver(threading.Thread):
         self.gui.text_problem.insert(tk.END, str(self.gui.initial_state) + "\nPairs:" + "\n")
 
         for p in self.agent.pairs:
+            # atualizar os dados do ponto de partida
+            # verifivar se o agente não esta no ponto de partida
+            if self.gui.initial_state.matrix[p.cell1.line][p.cell1.column] != 4:
+                # verifivar se o celula à esquerda esta vazia
+                if self.gui.initial_state.matrix[p.cell1.line][p.cell1.column-1] == 0:
+                    self.gui.initial_state.column_forklift = p.cell1.column-1
+                # verifivar se o celula à direita esta vazia
+                elif self.gui.initial_state.matrix[p.cell1.line][p.cell1.column + 1] == 0:
+                    self.gui.initial_state.column_forklift = p.cell1.column + 1
+            else:
+                self.gui.initial_state.column_forklift = p.cell1.column
+
+            # atualizar a localização do agente
+            self.gui.initial_state.line_forklift = p.cell1.line
+
+
             problem = WarehouseProblemSearch(self.gui.initial_state, p.cell2)
-
             solution = self.agent.solve_problem(problem)
-            print(p.cell1,p.cell2)
-            #self.agent.execute_solution()
             p.value = solution.cost
-            print("----")
-
-            # p.value = math.sqrt((p.cell1.line - p.cell2.line ) ** 2 +(p.cell1.column - p.cell2.column ) ** 2)
             self.gui.text_problem.insert(tk.END, str(p)+"\n")
 
         self.gui.text_problem.insert(tk.END, "END")
