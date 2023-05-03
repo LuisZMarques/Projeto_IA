@@ -17,5 +17,4 @@ class Solution:
     def cost(self) -> int:
         for a in self.actions:
             print(a)
-        print("--")
         return self.problem.compute_path_cost(self.actions)

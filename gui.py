@@ -639,13 +639,13 @@ class SearchSolver(threading.Thread):
                 self.gui.initial_state.column_forklift = p.cell1.column
 
             # atualizar a localização do agente
-            self.gui.initial_state.line_forklift = p.cell1.line
-
+            self.gui.initial_state.line_forklift = p.cell1.line 
 
             problem = WarehouseProblemSearch(self.gui.initial_state, p.cell2)
             solution = self.agent.solve_problem(problem)
             p.value = solution.cost
             self.gui.text_problem.insert(tk.END, str(p)+"\n")
+            print("Actions from Pair : " + str(p)+"\n"+"--------##------")
 
         self.gui.text_problem.insert(tk.END, "END")
 

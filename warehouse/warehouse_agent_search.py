@@ -8,6 +8,7 @@ from agentsearch.state import State
 from warehouse.cell import Cell
 from warehouse.heuristic_warehouse import HeuristicWarehouse
 from warehouse.pair import Pair
+from warehouse.warehouse_state import WarehouseState
 
 
 class WarehouseAgentSearch(Agent):
@@ -15,6 +16,7 @@ class WarehouseAgentSearch(Agent):
 
     def __init__(self, environment: S):
         super().__init__()
+        self.warehouseState = WarehouseState(environment.matrix, environment.rows, environment.columns)
         self.initial_environment = environment
         self.heuristic = HeuristicWarehouse()
         self.forklifts = []
@@ -29,7 +31,10 @@ class WarehouseAgentSearch(Agent):
                     self.exit = Cell(i, j)
                 elif environment.matrix[i][j] == constants.PRODUCT:
                     self.products.append(Cell(i, j))
-
+                    """if self.warehouseState.can_move_left():
+                        self.products.append(Cell(i, j-1))
+                    if self.warehouseState.can_move_right():
+                        self.products.append(Cell(i, j+1)) """
 
         for a in self.forklifts:
             for p in self.products:
