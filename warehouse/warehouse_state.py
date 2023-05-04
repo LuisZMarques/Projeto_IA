@@ -34,7 +34,7 @@ class WarehouseState(State[Action]):
     def can_move_right(self) -> bool:
         # TODO
         return self.column_forklift + 1 <= self.columns - 1 and\
-            self.matrix[self.line_forklift][self.column_forklift+1] == constants.EMPTY
+            (self.matrix[self.line_forklift][self.column_forklift+1] == constants.EMPTY or self.matrix[self.line_forklift][self.column_forklift+1] == constants.EXIT)
 
     def can_move_down(self) -> bool:
         # TODO

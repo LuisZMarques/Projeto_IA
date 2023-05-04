@@ -9,6 +9,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 import queue
 import threading
+from warehouse.cell import Cell
 
 import constants
 from ga.genetic_operators.mutation2 import Mutation2
@@ -625,6 +626,7 @@ class SearchSolver(threading.Thread):
         self.gui.text_problem.delete("1.0", "end")
         self.gui.text_problem.insert(tk.END, str(self.gui.initial_state) + "\nPairs:" + "\n")
 
+        count = 0
         for p in self.agent.pairs:
             # atualizar os dados do ponto de partida
             # verifivar se o agente não esta no ponto de partida
@@ -639,13 +641,33 @@ class SearchSolver(threading.Thread):
                 self.gui.initial_state.column_forklift = p.cell1.column
 
             # atualizar a localização do agente
-            self.gui.initial_state.line_forklift = p.cell1.line 
+            self.gui.initial_state.line_forklift = p.cell1.line
 
-            problem = WarehouseProblemSearch(self.gui.initial_state, p.cell2)
-            solution = self.agent.solve_problem(problem)
-            p.value = solution.cost
-            self.gui.text_problem.insert(tk.END, str(p)+"\n")
-            print("Actions from Pair : " + str(p)+"\n"+"--------##------")
+            # gold position
+
+            if self.gui.initial_state.matrix[p.cell2.line][p.cell2.column] == constants.EXIT:
+                problem = WarehouseProblemSearch(self.gui.initial_state, p.cell2)
+                solution = self.agent.solve_problem(problem)
+                p.value = solution.cost
+                self.gui.text_problem.insert(tk.END, str(p)+"\n")
+                print("Actions from Pair : " + str(p)+"\n"+"--------##------")
+            elif self.gui.initial_state.matrix[p.cell2.line][p.cell2.column] == constants.PRODUCT:
+                if p.cell2.column + 1 >= 0:
+                    if self.gui.initial_state.matrix[p.cell2.line][p.cell2.column-1]==constants.EMPTY:
+                        cell = Cell(p.cell2.line, p.cell2.column-1)
+                        problem = WarehouseProblemSearch(self.gui.initial_state, cell)
+                        solution = self.agent.solve_problem(problem)
+                        p.value = solution.cost
+                        self.gui.text_problem.insert(tk.END, str(p) + "\n")
+                        print("Actions from Pair : " + str(p) + "\n" + "--------##------")
+                if p.cell2.column+1 <= self.gui.initial_state.columns-1:
+                    if self.gui.initial_state.matrix[p.cell2.line][p.cell2.column + 1] == constants.EMPTY:
+                        cell = Cell(p.cell2.line, p.cell2.column+1)
+                        problem = WarehouseProblemSearch(self.gui.initial_state, cell)
+                        solution = self.agent.solve_problem(problem)
+                        p.value = solution.cost
+                        self.gui.text_problem.insert(tk.END, str(p) + "\n")
+                        print("Actions from Pair : " + str(p) + "\n" + "--------##------")
 
         self.gui.text_problem.insert(tk.END, "END")
 
