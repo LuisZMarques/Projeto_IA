@@ -1,4 +1,6 @@
 from ga.individual_int_vector import IntVectorIndividual
+from warehouse.cell import Cell
+
 
 class WarehouseIndividual(IntVectorIndividual):
 
@@ -8,7 +10,22 @@ class WarehouseIndividual(IntVectorIndividual):
 
     def compute_fitness(self) -> float:
         # TODO
-        return 0
+        self.fitness = 0
+        # do forklift ate ao 1º produto
+        for i in self.problem.pairs:
+            if i.cell1 == self.problem.forklifts[0] and i.cell2 == self.problem.products[self.genome[0]]:
+                self.fitness += i.value
+
+        for j in range(self.num_genes-1):
+            for k in self.problem.pairs:
+                if k.cell1 == self.problem.products[self.genome[j]] and k.cell2 == self.problem.products[self.genome[j+1]]:
+                    self.fitness += k.value
+
+        # do ultimo produto ate à exit
+        for i in self.problem.pairs:
+            if i.cell1 == self.problem.products[self.genome[self.num_genes-1]] and i.cell2 == Cell(0,4):
+                self.fitness += i.value
+        return self.fitness
 
     def obtain_all_path(self):
         # TODO

@@ -3,17 +3,21 @@ from warehouse.warehouse_agent_search import WarehouseAgentSearch
 from warehouse.warehouse_individual import WarehouseIndividual
 
 class WarehouseProblemGA(Problem):
+
+    SIMPLE_FITNESS = 0
+    PENALTY_FITNESS = 1
     def __init__(self, agent_search: WarehouseAgentSearch):
         # TODO
         self.forklifts = agent_search.forklifts
         self.products = agent_search.products
         self.agent_search = agent_search
         self.pairs = agent_search.pairs
-
-
+        self.exit = agent_search.exit
+        self.fitness_type = self.SIMPLE_FITNESS
     def generate_individual(self) -> "WarehouseIndividual":
         # TODO
-        new_individual = WarehouseIndividual(self, len(self.pairs))
+        new_individual = WarehouseIndividual(self, len(self.products))
+        new_individual.initialize()
         return new_individual
 
 
