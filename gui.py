@@ -327,6 +327,7 @@ class Window(tk.Tk):
             Mutation2(float(self.entry_mutation_prob.get())) if mutation_methods_index == 1 else \
                 Mutation3(float(self.entry_mutation_prob.get()))
 
+
         self.genetic_algorithm = GeneticAlgorithmThread(
             int(self.entry_seed.get()),
             int(self.entry_population_size.get()),
@@ -341,6 +342,7 @@ class Window(tk.Tk):
         self.generation_values = []
         self.average_values = []
         self.best_values = []
+
 
         self.genetic_algorithm.problem = self.problem_ga
         self.genetic_algorithm.add_tkinter_listener(self)
