@@ -9,6 +9,8 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 import queue
 import threading
+
+from warehouse.actions import ActionLeft
 from warehouse.cell import Cell
 
 import constants
@@ -639,6 +641,7 @@ class SearchSolver(threading.Thread):
                 # verifivar se o celula à direita esta vazia
                 elif self.gui.initial_state.matrix[p.cell1.line][p.cell1.column + 1] == 0:
                     self.gui.initial_state.column_forklift = p.cell1.column + 1
+
             else:
                 self.gui.initial_state.column_forklift = p.cell1.column
 
@@ -646,13 +649,31 @@ class SearchSolver(threading.Thread):
             self.gui.initial_state.line_forklift = p.cell1.line
 
             # gold position
-
             if self.gui.initial_state.matrix[p.cell2.line][p.cell2.column] == constants.EXIT:
                 problem = WarehouseProblemSearch(self.gui.initial_state, p.cell2)
                 solution = self.agent.solve_problem(problem)
                 p.value = solution.cost
                 self.gui.text_problem.insert(tk.END, str(p)+"\n")
-                print("Actions from Pair : " + str(p)+"\n"+"--------##------")
+                print("Actions from Pair : " + str(p)+"\n")
+                d = Cell(self.gui.initial_state.line_forklift, self.gui.initial_state.column_forklift)
+                for i in solution.actions:
+                    if str(i) == "LEFT":
+                        d = Cell(d.line, d.column - 1)
+                        p.path.append(d)
+                    elif str(i) == "RIGHT":
+                        d = Cell(d.line, d.column +1)
+                        p.path.append(d)
+                    elif str(i) == "UP":
+                        d = Cell(d.line - 1, d.column)
+                        p.path.append(d)
+                    elif str(i) == "DOWN":
+                        d = Cell(d.line + 1, d.column)
+                        p.path.append(d)
+
+                print("Caminho")
+                for path in p.path:
+                    print(path)
+
             elif self.gui.initial_state.matrix[p.cell2.line][p.cell2.column] == constants.PRODUCT:
                 if p.cell2.column + 1 >= 0:
                     if self.gui.initial_state.matrix[p.cell2.line][p.cell2.column-1]==constants.EMPTY:
@@ -661,7 +682,27 @@ class SearchSolver(threading.Thread):
                         solution = self.agent.solve_problem(problem)
                         p.value = solution.cost
                         self.gui.text_problem.insert(tk.END, str(p) + "\n")
-                        print("Actions from Pair : " + str(p) + "\n" + "--------##------")
+                        print("Actions from Pair : " + str(p) + "\n")
+                        d = Cell(self.gui.initial_state.line_forklift, self.gui.initial_state.column_forklift)
+                        p.path.append(d)
+                        for i in solution.actions:
+                            if str(i) == "LEFT":
+                                d = Cell(d.line, d.column - 1)
+                                p.path.append(d)
+                            elif str(i) == "RIGHT":
+                                d = Cell(d.line, d.column + 1)
+                                p.path.append(d)
+                            elif str(i) == "UP":
+                                d = Cell(d.line - 1, d.column)
+                                p.path.append(d)
+                            elif str(i) == "DOWN":
+                                d = Cell(d.line + 1, d.column)
+                                p.path.append(d)
+
+                        print("Caminho")
+                        for path in p.path:
+                            print(path)
+
                 if p.cell2.column+1 <= self.gui.initial_state.columns-1:
                     if self.gui.initial_state.matrix[p.cell2.line][p.cell2.column + 1] == constants.EMPTY:
                         cell = Cell(p.cell2.line, p.cell2.column+1)
@@ -669,12 +710,32 @@ class SearchSolver(threading.Thread):
                         solution = self.agent.solve_problem(problem)
                         p.value = solution.cost
                         self.gui.text_problem.insert(tk.END, str(p) + "\n")
-                        print("Actions from Pair : " + str(p) + "\n" + "--------##------")
+                        print("Actions from Pair : " + str(p) + "\n")
+                        d = Cell(self.gui.initial_state.line_forklift, self.gui.initial_state.column_forklift)
+                        p.path.append(d)
+                        for i in solution.actions:
+                            if str(i) == "LEFT":
+                                d = Cell(d.line, d.column - 1)
+                                p.path.append(d)
+                            elif str(i) == "RIGHT":
+                                d = Cell(d.line, d.column +1)
+                                p.path.append(d)
+                            elif str(i) == "UP":
+                                d = Cell(d.line - 1, d.column)
+                                p.path.append(d)
+                            elif str(i) == "DOWN":
+                                d = Cell(d.line + 1, d.column)
+                                p.path.append(d)
+
+                        print("Caminho")
+                        for path in p.path:
+                            print(path)
 
         self.gui.text_problem.insert(tk.END, "END")
 
         self.agent.search_method.stopped=True
         self.gui.problem_ga = WarehouseProblemGA(self.agent)
+
         self.gui.manage_buttons(data_set=tk.NORMAL, runSearch=tk.DISABLED, runGA=tk.NORMAL, stop=tk.DISABLED,
                                 open_experiments=tk.NORMAL, run_experiments=tk.DISABLED, stop_experiments=tk.DISABLED,
                                 simulation=tk.DISABLED, stop_simulation=tk.DISABLED)
@@ -712,9 +773,15 @@ class SolutionRunner(threading.Thread):
                     new_cell = forklift_path[j][step + 1]
                     new_cells.append(new_cell)
                     self.state.matrix[new_cell.line][new_cell.column] = constants.FORKLIFT
+                    if self.state.matrix[new_cell.line][new_cell.column-1] == constants.PRODUCT:
+                        self.state.matrix[new_cell.line][new_cell.column-1] = constants.PRODUCT_CATCH
+                    if new_cell.column + 1 < self.state.columns:
+                        if self.state.matrix[new_cell.line][new_cell.column + 1] == constants.PRODUCT:
+                            self.state.matrix[new_cell.line][new_cell.column + 1] = constants.PRODUCT_CATCH
                     old_cell[j] = new_cell
                 else:
                     self.state.matrix[old_cell[j].line][old_cell[j].column] = constants.FORKLIFT
+
 
                 # TODO put the catched products in black
             self.gui.queue.put((copy.deepcopy(self.state), step, False))

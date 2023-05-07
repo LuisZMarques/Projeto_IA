@@ -4,7 +4,7 @@ class Pair:
         self.cell2 = cell2
         self.value = 0
         # TODO
-        self.route = []
+        self.path = []
 
     def hash(self):
         return str(self.cell1.line) + "_" + str(self.cell1.column) + "_" + str(
@@ -12,4 +12,5 @@ class Pair:
 
     def __str__(self):
         return str(self.cell1.line) + "-" + str(self.cell1.column) + " / " + str(self.cell2.line) + "-" + str(self.cell2.column) + ": " + str(self.value) + "\n"
+
 
