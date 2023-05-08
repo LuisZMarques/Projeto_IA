@@ -635,6 +635,11 @@ class SearchSolver(threading.Thread):
             # atualizar os dados do ponto de partida
             # verifivar se o agente não esta no ponto de partida
             if self.gui.initial_state.matrix[p.cell1.line][p.cell1.column] != constants.FORKLIFT:
+                for i in range(self.gui.initial_state.rows):
+                    for j in range(self.gui.initial_state.columns):
+                        if self.gui.initial_state.matrix[i][j] == constants.FORKLIFT:
+                            self.gui.initial_state.matrix[i][j]=0
+
                 # verifivar se o celula à esquerda esta vazia
                 if p.cell1.column - 1 >= 0:
                     if self.gui.initial_state.matrix[p.cell1.line][p.cell1.column-1] == constants.EMPTY:
@@ -645,6 +650,12 @@ class SearchSolver(threading.Thread):
                         self.gui.initial_state.column_forklift = p.cell1.column + 1
 
             else:
+
+                if self.gui.initial_state.matrix[p.cell1.line][p.cell1.column] == constants.FORKLIFT:
+                    for i in range(self.gui.initial_state.rows):
+                        for j in range(self.gui.initial_state.columns):
+                            if self.gui.initial_state.matrix[i][j] == constants.FORKLIFT and self.gui.initial_state.matrix[p.cell1.line][p.cell1.column] != self.gui.initial_state.matrix[i][j]:
+                                self.gui.initial_state.matrix[i][j] = 0
 
                 self.gui.initial_state.column_forklift = p.cell1.column
 

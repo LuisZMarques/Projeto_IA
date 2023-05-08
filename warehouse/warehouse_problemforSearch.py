@@ -17,8 +17,10 @@ class WarehouseProblemSearch(Problem[WarehouseState]):
 
     def get_actions(self, state: WarehouseState) -> list:
         valid_actions = []
+
         for action in self.actions:
             if action.is_valid(state):
+                print(action)
                 valid_actions.append(action)
         return valid_actions
 
