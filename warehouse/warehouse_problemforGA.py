@@ -11,13 +11,13 @@ class WarehouseProblemGA(Problem):
         self.agent_search = agent_search
         self.pairs = agent_search.pairs
         self.exit = agent_search.exit
+        self.count = 0
 
     def generate_individual(self) -> "WarehouseIndividual":
         # TODO
         new_individual = WarehouseIndividual(self, len(self.products))
         new_individual.initialize()
         return new_individual
-
 
     def __str__(self):
         string = "# of forklifts: "

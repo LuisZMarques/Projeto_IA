@@ -634,15 +634,18 @@ class SearchSolver(threading.Thread):
         for p in self.agent.pairs:
             # atualizar os dados do ponto de partida
             # verifivar se o agente não esta no ponto de partida
-            if self.gui.initial_state.matrix[p.cell1.line][p.cell1.column] != 4:
+            if self.gui.initial_state.matrix[p.cell1.line][p.cell1.column] != constants.FORKLIFT:
                 # verifivar se o celula à esquerda esta vazia
-                if self.gui.initial_state.matrix[p.cell1.line][p.cell1.column-1] == 0:
-                    self.gui.initial_state.column_forklift = p.cell1.column-1
+                if p.cell1.column - 1 >= 0:
+                    if self.gui.initial_state.matrix[p.cell1.line][p.cell1.column-1] == constants.EMPTY:
+                        self.gui.initial_state.column_forklift = p.cell1.column-1
+                if p.cell1.column+1 <= self.gui.initial_state.columns-1:
                 # verifivar se o celula à direita esta vazia
-                elif self.gui.initial_state.matrix[p.cell1.line][p.cell1.column + 1] == 0:
-                    self.gui.initial_state.column_forklift = p.cell1.column + 1
+                    if self.gui.initial_state.matrix[p.cell1.line][p.cell1.column + 1] == constants.EMPTY:
+                        self.gui.initial_state.column_forklift = p.cell1.column + 1
 
             else:
+
                 self.gui.initial_state.column_forklift = p.cell1.column
 
             # atualizar a localização do agente
@@ -656,6 +659,7 @@ class SearchSolver(threading.Thread):
                 self.gui.text_problem.insert(tk.END, str(p)+"\n")
                 print("Actions from Pair : " + str(p)+"\n")
                 d = Cell(self.gui.initial_state.line_forklift, self.gui.initial_state.column_forklift)
+                p.path.append(d)
                 for i in solution.actions:
                     if str(i) == "LEFT":
                         d = Cell(d.line, d.column - 1)
@@ -670,12 +674,8 @@ class SearchSolver(threading.Thread):
                         d = Cell(d.line + 1, d.column)
                         p.path.append(d)
 
-                print("Caminho")
-                for path in p.path:
-                    print(path)
-
             elif self.gui.initial_state.matrix[p.cell2.line][p.cell2.column] == constants.PRODUCT:
-                if p.cell2.column + 1 >= 0:
+                if p.cell2.column - 1 >= 0:
                     if self.gui.initial_state.matrix[p.cell2.line][p.cell2.column-1]==constants.EMPTY:
                         cell = Cell(p.cell2.line, p.cell2.column-1)
                         problem = WarehouseProblemSearch(self.gui.initial_state, cell)
@@ -698,10 +698,6 @@ class SearchSolver(threading.Thread):
                             elif str(i) == "DOWN":
                                 d = Cell(d.line + 1, d.column)
                                 p.path.append(d)
-
-                        print("Caminho")
-                        for path in p.path:
-                            print(path)
 
                 if p.cell2.column+1 <= self.gui.initial_state.columns-1:
                     if self.gui.initial_state.matrix[p.cell2.line][p.cell2.column + 1] == constants.EMPTY:
@@ -726,10 +722,6 @@ class SearchSolver(threading.Thread):
                             elif str(i) == "DOWN":
                                 d = Cell(d.line + 1, d.column)
                                 p.path.append(d)
-
-                        print("Caminho")
-                        for path in p.path:
-                            print(path)
 
         self.gui.text_problem.insert(tk.END, "END")
 
@@ -781,7 +773,6 @@ class SolutionRunner(threading.Thread):
                     old_cell[j] = new_cell
                 else:
                     self.state.matrix[old_cell[j].line][old_cell[j].column] = constants.FORKLIFT
-
 
                 # TODO put the catched products in black
             self.gui.queue.put((copy.deepcopy(self.state), step, False))
