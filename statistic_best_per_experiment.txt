@@ -10,3 +10,27 @@ Fitness: 0
 
 
 # --------------------------------------------------------------
+
+Population size: 100
+Max generations: 100
+Selection: Tournament selection(2)
+Recombination: PMX recombination (0.7)
+Mutation:Insert Mutation (0.1)
+Fitness: 0
+[4, 18, 2, 8, 3, 15, 14, 12, 6, 0, 13, 19, 7, 10, 17, 16, 11, 9, 5, 1]
+
+
+
+# --------------------------------------------------------------
+
+Population size: 100
+Max generations: 100
+Selection: Tournament selection(4)
+Recombination: PMX recombination (0.7)
+Mutation:Insert Mutation (0.1)
+Fitness: 0
+[4, 18, 2, 8, 3, 15, 14, 12, 6, 0, 13, 19, 7, 10, 17, 16, 11, 9, 5, 1]
+
+
+
+# --------------------------------------------------------------

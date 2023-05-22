@@ -23,6 +23,7 @@ class WarehouseAgentSearch(Agent):
         self.products = []
         self.exit = None
         self.pairs = []
+
         for i in range(environment.rows):
             for j in range(environment.columns):
                 if environment.matrix[i][j] == constants.FORKLIFT:

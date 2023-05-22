@@ -15,6 +15,7 @@ class HeuristicWarehouse(Heuristic[WarehouseProblemSearch, WarehouseState]):
         self._cols_goal_matrix=None
     def compute(self, state: WarehouseState) -> float:
         # TODO
+        # Manhattan heuristic
         h = 0
         h = abs(state.line_forklift-self._problem.goal_position.line) + abs(state.column_forklift-self._problem.goal_position.column)
         return h
