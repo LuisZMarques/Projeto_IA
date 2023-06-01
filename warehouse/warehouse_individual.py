@@ -10,11 +10,8 @@ class WarehouseIndividual(IntVectorIndividual):
 
     def __init__(self, problem: "WarehouseProblem", num_genes: int):
         super().__init__(problem, num_genes)
-        self.forklifts_paths = []
         #self.biggest_path_steps = 0
         self.gen_divided = []
-        self.fitness = 0
-        self.penalizacao = 0
         
 
     def compute_fitness(self) -> float:
@@ -25,17 +22,23 @@ class WarehouseIndividual(IntVectorIndividual):
 
         for p in forklifts_paths:
             self.fitness += len(p)
-       
-        for i in range(big_path_steps):
-            for j in range(len(forklifts_paths)):
-                if i < len(forklifts_paths[j]) and i < len(forklifts_paths[j-1]) and forklifts_paths[j][i] == forklifts_paths[j-1][i]:
-                    self.penalizacao += 1
-                    print("Penalização: "+ str(self.penalizacao))
-                    print(str(forklifts_paths[j][i]) + " " + str(forklifts_paths[j-1][i]))
 
-        return self.fitness+self.penalizacao
+        # cria listas com as celulas de cada path a cada step (zip.py)
+        zipped_paths = list(zip(*forklifts_paths))
+
+        for paths in zipped_paths:
+            #Teve que se implementado __hash__ na classe Cell para que o set funcionasse
+            if len(set(paths)) < len(paths):
+                self.penalizacao += 1
+
+        print("Penalização: ", self.penalizacao)
+
+        self.fitness = self.fitness + self.penalizacao
+
+        return self.fitness
 
     def obtain_all_path(self):
+        self.forklifts_paths = []
         self.path = [None] * len(self.problem.forklifts)
         self.biggest_path_steps = 0
 
@@ -77,7 +80,6 @@ class WarehouseIndividual(IntVectorIndividual):
             if self.biggest_path_steps < len(self.path[f]):
                 self.biggest_path_steps = len(self.path[f])
 
-        self.gen_divided.clear()
         self.gen_divided = new
 
         return [self.forklifts_paths, self.biggest_path_steps]
@@ -85,7 +87,7 @@ class WarehouseIndividual(IntVectorIndividual):
     def __str__(self):
         string = 'Fitness: ' + f'{self.fitness}' + '\n'
         string += 'Genoma: ' + str(self.genome) + "\n"
-        string += 'Penalização: ' + f'{self.penalizacao}' + "\n\n"
+        string += 'Colisões Totais: ' + f'{self.penalizacao}' + "\n\n"
         for i in range(len(self.gen_divided)):
             string += 'Forklift ' + str(i) + ': ' + str(self.gen_divided[i]) + "\n"
         return string
