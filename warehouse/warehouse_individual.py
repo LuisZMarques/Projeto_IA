@@ -1,115 +1,101 @@
 import numpy as np
 
 from ga.individual_int_vector import IntVectorIndividual
-from warehouse.cell import Cell
-import constants, random
-from random import shuffle
+import random
 
 
 class WarehouseIndividual(IntVectorIndividual):
-
     def __init__(self, problem: "WarehouseProblem", num_genes: int):
         super().__init__(problem, num_genes)
         self.forklifts_paths = []
+        self.best_forklifts_paths = []
         self.lenPath = 0
-        self.penalizacao = 0
-        # TODO
+
     def compute_fitness(self) -> float:
-        # TODO
-        self.path = [None] * len(self.problem.forklifts)
         self.fitness = 0
-
-        # Definir o número de pontos de divisão
-        num_pontos_divisao = len(self.problem.forklifts)-1
-
-        # Gerar pontos de divisão aleatórios
+        self.penalizacao = 0
+        forklifts_paths = []
+        num_pontos_divisao = len(self.problem.forklifts) - 1
         pontos_divisao = random.sample(range(1, len(self.genome)), num_pontos_divisao)
-
-        # Ordenar os pontos de divisão
         pontos_divisao.sort()
+        new = [np.split(self.genome, pontos_divisao)[f] for f in range(len(self.problem.forklifts))]
 
-        # Dividir o array em partes desiguais com os pontos de divisão aleatórios
-        new = np.split(self.genome, pontos_divisao)
-
-        for f in range(len(self.problem.forklifts)):
-
-            # do forklift ate ao 1º produto
+        for f, forklift in enumerate(self.problem.forklifts):
             for i in self.problem.pairs:
-                if i.cell1 == self.problem.forklifts[f] and i.cell2 == self.problem.products[new[f][0]]:
+                if i.cell1 == forklift and i.cell2 == self.problem.products[new[f][0]]:
                     self.fitness += i.value
+                    forklifts_paths.append(i.path)
 
             for j in range(len(new[f]) - 1):
                 for k in self.problem.pairs:
                     if k.cell1 == self.problem.products[new[f][j + 1]] and k.cell2 == self.problem.products[new[f][j]]:
                         self.fitness += k.value
+                        forklifts_paths.append(k.path[::-1])
                     elif k.cell1 == self.problem.products[new[f][j]] and k.cell2 == self.problem.products[
                         new[f][j + 1]]:
                         self.fitness += k.value
+                        forklifts_paths.append(k.path)
 
-            # do ultimo produto ate à exit
             for l in self.problem.pairs:
-                if l.cell1 == self.problem.products[new[f][len(new[f]) - 1]] and l.cell2 == self.problem.exit:
+                if l.cell1 == self.problem.products[new[f][-1]] and l.cell2 == self.problem.exit:
                     self.fitness += l.value
+                    forklifts_paths.append(l.path)
 
+            zipped_paths = list(zip(*forklifts_paths))
 
-        return self.fitness+self.penalizacao
+            if any(len(set(paths)) < len(paths) for paths in zipped_paths):
+                self.penalizacao += 1
+
+        self.best_forklifts_paths = new
+
+        return self.fitness + self.penalizacao
 
     def obtain_all_path(self):
-        # TODOk
-
-        self.path = [None] * len(self.problem.forklifts)
+        self.path = [[] for _ in range(len(self.problem.forklifts))]
         self.lenPath = 0
 
-        new = np.array_split(self.genome, len(self.problem.forklifts))
-
-        # do forklift ate ao 1º produto
-        for f in range(len(self.problem.forklifts)):
-            self.path[f] = []
-            #print("A forklift " + str(f) + " vai apanhar os produtos : " + str(new[f]))
+        for f, forklift in enumerate(self.best_forklifts_paths):
             for i in self.problem.pairs:
-                if i.cell1 == self.problem.forklifts[f] and i.cell2 == self.problem.products[new[f][0]]:
-                    for j in i.path:
-                        self.path[f].append(j)
-            for j in range(len(new[f]) - 1):
-                for k in self.problem.pairs:
-                    if k.cell1 == self.problem.products[new[f][j + 1]] and k.cell2 == self.problem.products[new[f][j]]:
-                        for l in k.path[::-1]:
-                            self.path[f].append(l)
-                    elif k.cell1 == self.problem.products[new[f][j]] and k.cell2 == self.problem.products[
-                        new[f][j + 1]]:
-                        for l in k.path:
-                            self.path[f].append(l)
+                if i.cell1 == self.problem.forklifts[f] and i.cell2 == self.problem.products[forklift[0]]:
+                    self.path[f].extend(i.path)
 
-            # do ultimo produto ate à exit
+            for j in range(len(forklift) - 1):
+                for k in self.problem.pairs:
+                    if k.cell1 == self.problem.products[forklift[j + 1]] and k.cell2 == self.problem.products[
+                        forklift[j]]:
+                        self.path[f].extend(k.path[::-1])
+                    elif k.cell1 == self.problem.products[forklift[j]] and k.cell2 == self.problem.products[
+                        forklift[j + 1]]:
+                        self.path[f].extend(k.path)
+
             for l in self.problem.pairs:
-                if l.cell1 == self.problem.products[new[f][len(new[f]) - 1]] and l.cell2 == self.problem.exit:
-                    for d in l.path:
-                        self.path[f].append(d)
+                if l.cell1 == self.problem.products[forklift[-1]] and l.cell2 == self.problem.exit:
+                    self.path[f].extend(l.path)
 
             self.forklifts_paths.insert(f, self.path[f])
+
             if self.lenPath < len(self.path[f]):
                 self.lenPath = len(self.path[f])
-
-        #print("N de forklifts : " + str(len(self.forklifts_paths)))
-        # print("N de caminhos : " + str(len(self.path)))
-
-        #print("steps Obtain : " + str(self.lenPath))
 
         return [self.forklifts_paths, self.lenPath]
 
     def __str__(self):
         string = 'Fitness: ' + f'{self.fitness}' + '\n'
-        string += str(self.genome) + "\n\n"
-        # TODO
+        string += 'Genoma: ' + str(self.genome) + "\n\n"
+        string += 'Penalização:' + str(self.penalizacao) + "\n\n"
+
+        for i, paths in enumerate(self.best_forklifts_paths):
+            string += 'Forklift ' + str(i) + ' Path: ' + str(paths) + "\n\n"
+
         return string
 
     def better_than(self, other: "WarehouseIndividual") -> bool:
-        return True if self.fitness < other.fitness else False
+        return self.fitness < other.fitness
 
-    # __deepcopy__ is implemented here so that all individuals share the same problem instance
     def __deepcopy__(self, memo):
         new_instance = self.__class__(self.problem, self.num_genes)
         new_instance.genome = self.genome.copy()
         new_instance.fitness = self.fitness
-        # TODO
+        new_instance.penalizacao = self.penalizacao
+        new_instance.best_forklifts_paths = self.best_forklifts_paths.copy()
         return new_instance
