@@ -58,7 +58,7 @@ class WarehouseIndividual(IntVectorIndividual):
                 if len(set(paths)) < len(paths):
                     self.penalizacao += 1
 
-            print(self.penalizacao)
+            #print(self.penalizacao)
 
 
             self.best_forklifts_paths = new

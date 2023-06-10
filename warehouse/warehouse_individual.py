@@ -7,14 +7,13 @@ import random
 class WarehouseIndividual(IntVectorIndividual):
     def __init__(self, problem: "WarehouseProblem", num_genes: int):
         super().__init__(problem, num_genes)
-        self.forklifts_paths = []
         self.best_forklifts_paths = []
-        self.lenPath = 0
 
     def compute_fitness(self) -> float:
         self.fitness = 0
         self.penalizacao = 0
-        forklifts_paths = []
+        self.forklifts_paths = []
+
         num_pontos_divisao = len(self.problem.forklifts) - 1
         pontos_divisao = random.sample(range(1, len(self.genome)), num_pontos_divisao)
         pontos_divisao.sort()
@@ -24,24 +23,24 @@ class WarehouseIndividual(IntVectorIndividual):
             for i in self.problem.pairs:
                 if i.cell1 == forklift and i.cell2 == self.problem.products[new[f][0]]:
                     self.fitness += i.value
-                    forklifts_paths.append(i.path)
+                    self.forklifts_paths.append(i.path)
 
             for j in range(len(new[f]) - 1):
                 for k in self.problem.pairs:
                     if k.cell1 == self.problem.products[new[f][j + 1]] and k.cell2 == self.problem.products[new[f][j]]:
                         self.fitness += k.value
-                        forklifts_paths.append(k.path[::-1])
+                        self.forklifts_paths.append(k.path[::-1])
                     elif k.cell1 == self.problem.products[new[f][j]] and k.cell2 == self.problem.products[
                         new[f][j + 1]]:
                         self.fitness += k.value
-                        forklifts_paths.append(k.path)
+                        self.forklifts_paths.append(k.path)
 
             for l in self.problem.pairs:
                 if l.cell1 == self.problem.products[new[f][-1]] and l.cell2 == self.problem.exit:
                     self.fitness += l.value
-                    forklifts_paths.append(l.path)
+                    self.forklifts_paths.append(l.path)
 
-            zipped_paths = list(zip(*forklifts_paths))
+            zipped_paths = list(zip(*self.forklifts_paths))
 
             if any(len(set(paths)) < len(paths) for paths in zipped_paths):
                 self.penalizacao += 1
@@ -51,8 +50,9 @@ class WarehouseIndividual(IntVectorIndividual):
         return self.fitness + self.penalizacao
 
     def obtain_all_path(self):
+        self.best_path = []
         self.path = [[] for _ in range(len(self.problem.forklifts))]
-        self.lenPath = 0
+        steps = 0
 
         for f, forklift in enumerate(self.best_forklifts_paths):
             for i in self.problem.pairs:
@@ -72,12 +72,12 @@ class WarehouseIndividual(IntVectorIndividual):
                 if l.cell1 == self.problem.products[forklift[-1]] and l.cell2 == self.problem.exit:
                     self.path[f].extend(l.path)
 
-            self.forklifts_paths.insert(f, self.path[f])
+            self.best_path.insert(f, self.path[f])
 
-            if self.lenPath < len(self.path[f]):
-                self.lenPath = len(self.path[f])
+            if steps < len(self.path[f]):
+                steps = len(self.path[f])
 
-        return [self.forklifts_paths, self.lenPath]
+        return [self.best_path, steps]
 
     def __str__(self):
         string = 'Fitness: ' + f'{self.fitness}' + '\n'
