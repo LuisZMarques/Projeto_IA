@@ -6,7 +6,7 @@ class Recombination3(Recombination):
 
     def __init__(self, probability: float):
         super().__init__(probability)
-
+    #Recombination Cycle Crossover (CX):
     def recombine(self, ind1: Individual, ind2: Individual) -> None:
         num_genes = ind1.num_genes
         cut1 = GeneticAlgorithm.rand.randint(0, num_genes - 1)
