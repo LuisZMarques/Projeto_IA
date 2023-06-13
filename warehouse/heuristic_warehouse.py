@@ -13,12 +13,15 @@ class HeuristicWarehouse(Heuristic[WarehouseProblemSearch, WarehouseState]):
         super().__init__()
         self._lines_goal_matrix=None
         self._cols_goal_matrix=None
+        self.h = None
+
     def compute(self, state: WarehouseState) -> float:
         # TODO
         # Manhattan heuristic
         h = 0
         h = abs(state.line_forklift-self._problem.goal_position.line) + abs(state.column_forklift-self._problem.goal_position.column)
-        return h
+
+        return self.h
 
     def __str__(self):
-        return "# TODO"
+        return "Manhattan heuristic" + str(self.h)

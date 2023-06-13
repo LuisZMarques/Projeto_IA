@@ -1,4 +1,3 @@
-
 from abc import abstractmethod
 from ga.problem import Problem
 from ga.individual import Individual
@@ -9,7 +8,6 @@ class IntVectorIndividual(Individual):
     def __init__(self, problem: Problem, num_genes: int):
         super().__init__(problem, num_genes)
         self.genome = [None] * num_genes
-        # TODO
 
     def initialize(self):
         for i in range(self.num_genes):

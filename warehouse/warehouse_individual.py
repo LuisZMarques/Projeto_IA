@@ -3,7 +3,6 @@ import numpy as np
 from ga.individual_int_vector import IntVectorIndividual
 import random
 
-
 class WarehouseIndividual(IntVectorIndividual):
     def __init__(self, problem: "WarehouseProblem", num_genes: int):
         super().__init__(problem, num_genes)
