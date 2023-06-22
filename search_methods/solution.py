@@ -15,6 +15,7 @@ class Solution:
 
     @property
     def cost(self) -> int:
-        for a in self.actions:
-            print(a)
+        #for a in self.actions:
+            #print(a)
+
         return self.problem.compute_path_cost(self.actions)
