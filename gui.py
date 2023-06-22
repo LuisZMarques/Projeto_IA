@@ -668,7 +668,7 @@ class SearchSolver(threading.Thread):
                 solution = self.agent.solve_problem(problem)
                 p.value = solution.cost
                 self.gui.text_problem.insert(tk.END, str(p)+"\n")
-                print("Actions from Pair : " + str(p)+"\n")
+                # print("Actions from Pair : " + str(p)+"\n")
                 d = Cell(self.gui.initial_state.line_forklift, self.gui.initial_state.column_forklift)
                 p.path.append(d)
                 for i in solution.actions:
@@ -693,7 +693,7 @@ class SearchSolver(threading.Thread):
                         solution = self.agent.solve_problem(problem)
                         p.value = solution.cost
                         self.gui.text_problem.insert(tk.END, str(p) + "\n")
-                        print("Actions from Pair : " + str(p) + "\n")
+                        # print("Actions from Pair : " + str(p) + "\n")
                         d = Cell(self.gui.initial_state.line_forklift, self.gui.initial_state.column_forklift)
                         p.path.append(d)
                         for i in solution.actions:
@@ -717,7 +717,7 @@ class SearchSolver(threading.Thread):
                         solution = self.agent.solve_problem(problem)
                         p.value = solution.cost
                         self.gui.text_problem.insert(tk.END, str(p) + "\n")
-                        print("Actions from Pair : " + str(p) + "\n")
+                        # print("Actions from Pair : " + str(p) + "\n")
                         d = Cell(self.gui.initial_state.line_forklift, self.gui.initial_state.column_forklift)
                         p.path.append(d)
                         for i in solution.actions:

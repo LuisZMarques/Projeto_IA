@@ -20,7 +20,6 @@ class WarehouseProblemSearch(Problem[WarehouseState]):
 
         for action in self.actions:
             if action.is_valid(state):
-                print(action)
                 valid_actions.append(action)
         return valid_actions
 
