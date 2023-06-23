@@ -15,6 +15,11 @@ from warehouse.warehouse_agent_search import read_state_from_txt_file, Warehouse
 from warehouse.warehouse_problemforGA import WarehouseProblemGA
 from warehouse.warehouse_state import WarehouseState
 
+from warehouse.cell import Cell
+from warehouse.warehouse_problemforSearch import WarehouseProblemSearch
+import constants
+
+
 
 class WarehouseExperimentsFactory(ExperimentsFactory):
 
@@ -64,6 +69,108 @@ class WarehouseExperimentsFactory(ExperimentsFactory):
 
         agent_search = WarehouseAgentSearch(WarehouseState(matrix, num_rows, num_columns))
         # TODO calculate pair distances
+
+        self.initial_state = WarehouseState(matrix, num_rows, num_columns)
+
+        for p in agent_search.pairs:
+            # atualizar os dados do ponto de partida
+            # verifivar se o agente não esta no ponto de partida
+            if self.initial_state.matrix[p.cell1.line][p.cell1.column] != constants.FORKLIFT:
+                for i in range(self.initial_state.rows):
+                    for j in range(self.initial_state.columns):
+                        if self.initial_state.matrix[i][j] == constants.FORKLIFT:
+                            self.initial_state.matrix[i][j]=0
+
+                # verifivar se o celula à esquerda esta vazia
+                if p.cell1.column - 1 >= 0:
+                    if self.initial_state.matrix[p.cell1.line][p.cell1.column-1] == constants.EMPTY:
+                        self.initial_state.column_forklift = p.cell1.column-1
+                if p.cell1.column+1 <= self.initial_state.columns-1:
+                # verifivar se o celula à direita esta vazia
+                    if self.initial_state.matrix[p.cell1.line][p.cell1.column + 1] == constants.EMPTY:
+                        self.initial_state.column_forklift = p.cell1.column + 1
+            else:
+                if self.initial_state.matrix[p.cell1.line][p.cell1.column] == constants.FORKLIFT:
+                    for i in range(self.initial_state.rows):
+                        for j in range(self.initial_state.columns):
+                            if self.initial_state.matrix[i][j] == constants.FORKLIFT and self.initial_state.matrix[p.cell1.line][p.cell1.column] != self.initial_state.matrix[i][j]:
+                                self.initial_state.matrix[i][j] = 0
+
+                self.initial_state.column_forklift = p.cell1.column
+
+            # atualizar a localização do agente
+            self.initial_state.line_forklift = p.cell1.line
+
+            # gold position
+            if self.initial_state.matrix[p.cell2.line][p.cell2.column] == constants.EXIT:
+                problem = WarehouseProblemSearch(self.initial_state, p.cell2)
+                solution = agent_search.solve_problem(problem)
+                p.value = solution.cost
+                print("Actions from Pair : " + str(p)+"\n")
+                d = Cell(self.initial_state.line_forklift, self.initial_state.column_forklift)
+                p.path.append(d)
+                for i in solution.actions:
+                    if str(i) == "LEFT":
+                        d = Cell(d.line, d.column - 1)
+                        p.path.append(d)
+                    elif str(i) == "RIGHT":
+                        d = Cell(d.line, d.column +1)
+                        p.path.append(d)
+                    elif str(i) == "UP":
+                        d = Cell(d.line - 1, d.column)
+                        p.path.append(d)
+                    elif str(i) == "DOWN":
+                        d = Cell(d.line + 1, d.column)
+                        p.path.append(d)
+
+            elif self.initial_state.matrix[p.cell2.line][p.cell2.column] == constants.PRODUCT:
+                if p.cell2.column - 1 >= 0:
+                    if self.initial_state.matrix[p.cell2.line][p.cell2.column-1]==constants.EMPTY:
+                        cell = Cell(p.cell2.line, p.cell2.column-1)
+                        problem = WarehouseProblemSearch(self.initial_state, cell)
+                        solution = agent_search.solve_problem(problem)
+                        p.value = solution.cost
+                        print("Actions from Pair : " + str(p) + "\n")
+                        d = Cell(self.initial_state.line_forklift, self.initial_state.column_forklift)
+                        p.path.append(d)
+                        for i in solution.actions:
+                            if str(i) == "LEFT":
+                                d = Cell(d.line, d.column - 1)
+                                p.path.append(d)
+                            elif str(i) == "RIGHT":
+                                d = Cell(d.line, d.column + 1)
+                                p.path.append(d)
+                            elif str(i) == "UP":
+                                d = Cell(d.line - 1, d.column)
+                                p.path.append(d)
+                            elif str(i) == "DOWN":
+                                d = Cell(d.line + 1, d.column)
+                                p.path.append(d)
+
+                if p.cell2.column+1 <= self.initial_state.columns-1:
+                    if self.initial_state.matrix[p.cell2.line][p.cell2.column + 1] == constants.EMPTY:
+                        cell = Cell(p.cell2.line, p.cell2.column+1)
+                        problem = WarehouseProblemSearch(self.initial_state, cell)
+                        solution = agent_search.solve_problem(problem)
+                        p.value = solution.cost
+                        # print("Actions from Pair : " + str(p) + "\n")
+                        d = Cell(self.initial_state.line_forklift, self.initial_state.column_forklift)
+                        p.path.append(d)
+                        for i in solution.actions:
+                            if str(i) == "LEFT":
+                                d = Cell(d.line, d.column - 1)
+                                p.path.append(d)
+                            elif str(i) == "RIGHT":
+                                d = Cell(d.line, d.column +1)
+                                p.path.append(d)
+                            elif str(i) == "UP":
+                                d = Cell(d.line - 1, d.column)
+                                p.path.append(d)
+                            elif str(i) == "DOWN":
+                                d = Cell(d.line + 1, d.column)
+                                p.path.append(d)
+
+
         self.problem = WarehouseProblemGA(agent_search)
 
         experiment_textual_representation = self.build_experiment_textual_representation()

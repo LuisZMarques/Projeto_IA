@@ -58,3 +58,43 @@ Fitness: 0
 
 
 # --------------------------------------------------------------
+
+Population size: 100
+Max generations: 100
+Selection: Tournament selection(2)
+Recombination: PMX recombination (0.7)
+Mutation:Insert Mutation (0.1)
+Fitness: 150
+Genoma: [11, 9, 7, 2, 6, 8, 4, 16, 19, 17, 10, 15, 14, 0, 1, 5, 3, 18, 13, 12]
+
+Penalização:0
+
+Forklift 0 Path: [11  9  7  2  6  8  4 16 19 17 10 15 14]
+
+Forklift 1 Path: [ 0  1  5  3 18]
+
+Forklift 2 Path: [13 12]
+
+
+
+# --------------------------------------------------------------
+
+Population size: 100
+Max generations: 100
+Selection: Tournament selection(4)
+Recombination: PMX recombination (0.7)
+Mutation:Insert Mutation (0.1)
+Fitness: 136
+Genoma: [9, 7, 3, 5, 1, 0, 2, 6, 8, 18, 11, 15, 14, 4, 10, 17, 19, 16, 13, 12]
+
+Penalização:0
+
+Forklift 0 Path: [9 7 3]
+
+Forklift 1 Path: [ 5  1  0  2  6  8 18 11 15 14  4 10 17 19 16]
+
+Forklift 2 Path: [13 12]
+
+
+
+# --------------------------------------------------------------
